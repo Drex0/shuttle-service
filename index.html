@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en" >
+
+<head>
+  <meta charset="UTF-8">
+  <title>Shuttle Location</title>
+  
+  
+  <link rel='stylesheet' href='css/uikit.min.css'>
+  <link rel="stylesheet" href="css/style.css">
+
+  
+</head>
+
+<body>
+
+  <div class="uk-card uk-card-default uk-width-1-2@s uk-align-center">
+	<div class="uk-card-header">
+		<div class="uk-grid-small uk-flex-middle" uk-grid>
+			<div class="uk-width-auto">
+				<span uk-icon="location"></span>
+			</div>
+			<div class="uk-width-expand">
+				<h3 class="uk-card-title uk-margin-remove-bottom">Closest Shuttle Location</h3>				
+			</div>
+		</div>
+	</div>
+	<div class="uk-card-body uk-background-primary" id="card">
+		<h4 class="header uk-margin-remove-bottom" id="closestLocation">-----</h4>
+		<h1 class="header uk-margin-remove-top" id="closestTime">-----</h1>		
+	</div>	
+	<div class="uk-card-footer">
+		<ul uk-accordion>
+		<li>
+			<a class="uk-accordion-title" href="#">See all stops</a>
+			<div class="uk-accordion-content">
+				<ul class="uk-list uk-list-divider">
+					<li>
+						<p class="uk-text-bold">A - West</p>
+						<p id="A - West">-- min</p>
+					</li>
+					<li>
+						<p class="uk-text-bold">F - East</p>
+						<p id="F - East">-- min</p>
+					</li>
+					<li>
+						<p class="uk-text-bold">X - West</p>
+						<p id="X - West">-- min</p>
+					</li>
+					<li>
+						<p class="uk-text-bold">Post 4</p>
+						<p id="Post 4">-- min</p>
+					</li>
+					<li>
+						<p class="uk-text-bold">D - West</p>
+						<p id="D - West">-- min</p>
+					</li>
+					<li>
+						<p class="uk-text-bold">C - West</p>
+						<p id="C - West">-- min</p>
+					</li>
+					<li>
+						<p class="uk-text-bold">F - West</p>
+						<p id="F - West">-- min</p>
+					</li>				
+				</ul>
+			</div>
+		</li>
+	</ul>
+ </div>
+</div>
+
+<div class="uk-container uk-width-1-2@s uk-align-center">
+	<div class="uk-text-center" id="x"></div>
+</div>
+	<script src='js/uikit.min.js'></script>
+	<script src='js/uikit-icons.min.js'></script>
+    <script  src="js/index.js"></script>
+</body>
+
+</html>
