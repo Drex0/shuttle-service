@@ -8,6 +8,12 @@ let x = document.getElementById("closestLocation");
 let ct = document.getElementById("closestTime");
 let hT = document.getElementById("headerTime");
 let closest;
+let timer;
+// start and end times [Hour,Minute] format.
+let startTime 	= [6,29];
+let endTime 	= [17,29];
+let endTimeFri 	= [13,29];
+
 // delta			= compare current position to post position
 // countdown	= the time until next shuttle arrives 15min or less
 // events			= represent the minutes every hour that the shuttle stops at that post
@@ -20,6 +26,17 @@ var posts = [
 	{ post:'C - West', lat:40.778516, lon:-111.953135, delta:0, countdown:0, events:[6,21,36,51]},
 	{ post:'F - West', lat:40.783623, lon:-111.953091, delta:0, countdown:0, events:[8,23,38,53]}
 ];
+
+//Short dates format "MM/DD/YYYY"
+var holidays = [
+	"11/22/2018",
+	"12/24/2018",
+	"12/25/2018",
+	"12/26/2018",	
+	"12/27/2018",
+];
+
+var firstOffFridayStart = "01/12/2018";
 
 // Tracking users position
 let watchId = navigator.geolocation.watchPosition(
@@ -61,7 +78,7 @@ function processGeolocation(position) {
 	var distanceArray = [];
 	
 	if(debug) {
-		let div = document.getElementById("x");
+		let div = document.getElementById("debug");
   	div.innerHTML = "Counter: " + counter++ +
     "<br>Latitude: " + latitude +
     "<br>Longitude: " + longitude +
@@ -90,14 +107,50 @@ function distance(lat1, lon1, lat2, lon2) {
 
 // Check if shuttle runs on that day/time
 function checkDay() {
-	// If mon-th or on fri and between 7-5, fri till 1:30
-	// TODO: more conditions
+	// If mon-th or on fri	
 	var today = new Date();
-	if(today.getDay() == 6 || today.getDay() == 0) {
-		dayError("Shuttle doesn't run on the weekend.");
-	} else {
-		setInterval(doTheTime, 1000);
-	}			
+	var tDay = today.getDay();
+	switch(tDay) {
+		case 6:
+		case 0:
+			dayError("Shuttle is not currently running.");
+			break;
+		/*
+		case 5:
+			if(checkFriday()){
+				setInterval(doTheTime,1000);
+			}
+			else dayError("Shuttle is not currently running.");
+			break;
+		*/
+		default:
+			timer = setInterval(doTheTime, 1000);
+			break;
+	}
+}
+
+// Check if it is a working friday
+function checkFriday() {
+	
+}
+
+// Check if h:m is in the range of a:b-c:d
+// Does not support over-night checking like 23:00-1:00am
+function checkTime (h,m,a,b,c,d){
+	if (a > c || ((a == c) && (b > d))) {
+	  // not a valid input
+	} 
+	else {
+	   if (h > a && h < c) {
+	        return true;
+	   } else if (h == a && m >= b) {
+	       return true;  
+	   } else if (h == c && m <= d) {
+	       return true;
+	   } else {
+	        return false;
+	   }
+	}
 }
 
 // Used to get first value that is > minute in posts[].events array otherwise return undefined
@@ -115,29 +168,43 @@ function getByValue(arr, value) {
 function doTheTime() {
 	var h;
 	var m;	
-	for(var i=0; i < posts.length; i++) {
-		// Get first item in posts[i].events array that is > minute
-		var t = new Date();
-		var d = new Date();
-		var countdown;
-		var found;
-		var currentTime = d.getTime();
-		h = d.getHours();
-		m = d.getMinutes();
-		found = getByValue(posts[i].events, m);
-		
-		// Check if found getByValue returned anything in the array. If it didn't then the time is in the next hour
-		if(found){
-			t.setMinutes(found, 0);
-		}else{
-			t.setHours(h+1, posts[i].events[0], 0);
-		}		
-		countdown = t.getTime();
-		var deltaTime = Math.abs(countdown - currentTime);
-		posts[i].countdown = deltaTime;		
+	var today = new Date();
+	var tDay = today.getDay();
+	var tHours = today.getHours();
+	var tMinutes = today.getMinutes();
+	isTime = checkTime(tHours,tMinutes,startTime[0],startTime[1],endTime[0],endTime[1]);
+	isFriTime = checkTime(tHours,tMinutes,startTime[0],startTime[1],endTimeFri[0],endTimeFri[1]);
+
+	if(isTime){
+		for(var i=0; i < posts.length; i++) {
+			// Get first item in posts[i].events array that is > minute
+			var t = new Date();
+			var d = new Date();
+			var countdown;
+			var found;
+			var currentTime = d.getTime();
+			h = d.getHours();
+			m = d.getMinutes();
+			found = getByValue(posts[i].events, m);
+			
+			// Check if found getByValue returned anything in the array. If it didn't then the time is in the next hour
+			if(found){
+				t.setMinutes(found, 0);
+			}else{
+				t.setHours(h+1, posts[i].events[0], 0);
+			}		
+			countdown = t.getTime();
+			var deltaTime = Math.abs(countdown - currentTime);
+			posts[i].countdown = deltaTime;		
+		}
+		// Display in HTML
+		displayTime();
 	}
-	// Display in HTML
-	displayTime();
+	else {		
+		clearDivs();
+		dayError("Shuttle is not currenlty running.");
+		clearInterval(timer);
+	}	
 }
 
 // Convert milliseconds to mm:ss
@@ -167,6 +234,15 @@ function displayTime() {
 	else{
 		document.getElementById("card").className = "uk-card-body uk-background-primary";
 	}
+}
+
+function clearDivs() {
+	for(var i=0;i<posts.length;i++) {
+		var p = posts[i].post;
+		document.getElementById(p).innerHTML = "-- min";
+	}	
+	// Display closest time in card body
+	ct.innerHTML = "-- min";
 }
 
 // Check if weekend on body load
