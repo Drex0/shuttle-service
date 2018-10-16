@@ -180,9 +180,9 @@ function doTheTime() {
 			// Get first item in posts[i].events array that is > minute
 			var t = new Date();
 			var d = new Date();
-			var countdown;
-			var found;
+			var count;
 			var currentTime = d.getTime();
+			var found;
 			h = d.getHours();
 			m = d.getMinutes();
 			found = getByValue(posts[i].events, m);
@@ -192,9 +192,9 @@ function doTheTime() {
 				t.setMinutes(found, 0);
 			}else{
 				t.setHours(h+1, posts[i].events[0], 0);
-			}		
-			countdown = t.getTime();
-			var deltaTime = Math.abs(countdown - currentTime);
+			}	
+			count = t.getTime();	
+			var deltaTime = Math.abs(count - currentTime);
 			posts[i].countdown = deltaTime;		
 		}
 		// Display in HTML
