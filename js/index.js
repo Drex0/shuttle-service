@@ -222,13 +222,24 @@ function displayTime() {
 	// TODO: This needs an update to set the name of the stop from the object as well as the time instead of fixed array position.
 	for(var i=0;i<posts.length;i++) {
 		var p = posts[i].post;
-		document.getElementById(p).innerHTML = msToTime(posts[i].countdown)+" min";
+		if(p == undefined){
+			document.getElementById(p).innerHTML = "-- min";
+		} else {
+			document.getElementById(p).innerHTML = msToTime(posts[i].countdown)+" min";
+		}
 	}	
 	// Display closest time in card body
-	ct.innerHTML = msToTime(posts[closest].countdown)+" min";
+	if(closest == undefined){
+		ct.innerHTML = "-- min";
+	} else {
+		ct.innerHTML = msToTime(posts[closest].countdown)+" min";
+	}
 	
 	// If time is <3min display red background
-	if(posts[closest].countdown<180000){
+	if(closest == undefined){
+		//
+	}
+	else if(posts[closest].countdown<180000){
 		document.getElementById("card").className = "uk-card-body dangerbg";
 	}
 	else{
