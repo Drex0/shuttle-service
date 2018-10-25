@@ -79,7 +79,7 @@ function processGeolocation(position) {
 	
 	if(debug) {
 		let div = document.getElementById("debug");
-  	div.innerHTML = "Counter: " + counter++ +
+  	div.innerHTML = `<h5 class="uk-margin-remove-bottom">GPS Debug Info:</h5>` + "<br>Counter: " + counter++ +
     "<br>Latitude: " + latitude +
     "<br>Longitude: " + longitude +
     "<br>Accuracy: " + accuracy;
@@ -241,7 +241,7 @@ function clearDivs() {
 		var p = posts[i].post;
 		document.getElementById(p).innerHTML = "-- min";
 	}	
-	// Display closest time in card body
+	// Clear closest time in card body
 	ct.innerHTML = "-- min";
 }
 
