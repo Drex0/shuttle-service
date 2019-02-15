@@ -2,7 +2,7 @@
 // Description: Get closest shuttle stop from geolocation and display time in min when next shuttle will arrive.
 // Search TODO: items to fix a few things
 
-let debug = 1; // 1 or 0 to display debug info in html
+let debug = 0; // 1 or 0 to display debug info in html
 let counter = 0;
 let x = document.getElementById("closestLocation");
 let ct = document.getElementById("closestTime");
@@ -15,28 +15,32 @@ let endTime 	= [17,29];
 let endTimeFri 	= [13,29];
 
 // delta			= compare current position to post position
-// countdown	= the time until next shuttle arrives 15min or less
+// countdown		= the time until next shuttle arrives 15min or less
 // events			= represent the minutes every hour that the shuttle stops at that post
 var posts = [
 	{ post:'A - West', lat:40.790127, lon:-111.952834, delta:0, countdown:0, events:[11,26,41,56]},
 	{ post:'F - East', lat:40.782786, lon:-111.951483, delta:0, countdown:0, events:[0,15,30,45]},
 	{ post:'X - West', lat:40.780959, lon:-111.951195, delta:0, countdown:0, events:[1,16,31,46]},
-	{ post:'Post 4', lat:40.779283, lon:-111.951340, delta:0, countdown:0, events:[2,17,32,47]},
+	{ post:'Post 4', 	 lat:40.779283, lon:-111.951340, delta:0, countdown:0, events:[2,17,32,47]},
 	{ post:'D - West', lat:40.775975, lon:-111.951003, delta:0, countdown:0, events:[4,19,34,49]},
 	{ post:'C - West', lat:40.778516, lon:-111.953135, delta:0, countdown:0, events:[6,21,36,51]},
 	{ post:'F - West', lat:40.783623, lon:-111.953091, delta:0, countdown:0, events:[8,23,38,53]}
 ];
 
-//Short dates format "MM/DD/YYYY"
+// Short dates format "MM/DD/YYYY"
+//TODO: Check function to see if it's a holiday
 var holidays = [
-	"11/22/2018",
-	"12/24/2018",
-	"12/25/2018",
-	"12/26/2018",	
-	"12/27/2018",
+	"5/27//2019",
+	"7/4/2019",
+	"9/2/2019",
+	"11/28/2109",	
+	"12/23/2019",
+	"12/24/2019",
+	"12/25/2019",
+	"12/26/2019"
 ];
 
-var firstOffFridayStart = "01/12/2018";
+const firstOffFridayStart = new Date("01/11/2019");
 
 // Tracking users position
 let watchId = navigator.geolocation.watchPosition(
@@ -75,8 +79,7 @@ function processGeolocation(position) {
   var longitude = position.coords.longitude;
   var accuracy = position.coords.accuracy;
 	var i;
-	var distanceArray = [];
-	
+	// Display geo debug info on web page
 	if(debug) {
 		let div = document.getElementById("debug");
   	div.innerHTML = `<h5 class="uk-margin-remove-bottom">GPS Debug Info:</h5>` + "<br>Counter: " + counter++ +
@@ -108,21 +111,20 @@ function distance(lat1, lon1, lat2, lon2) {
 // Check if shuttle runs on that day/time
 function checkDay() {
 	// If mon-th or on fri	
-	var today = new Date();
-	var tDay = today.getDay();
+	var aDay = new Date();
+	var tDay = aDay.getDay();
+	
 	switch(tDay) {
 		case 6:
 		case 0:
 			dayError("Shuttle is not currently running.");
 			break;
-		/*
 		case 5:
-			if(checkFriday()){
+			if(checkFriday(aDay)){
 				setInterval(doTheTime,1000);
 			}
-			else dayError("Shuttle is not currently running.");
+			else dayError("Off Friday. Shuttle is not currently running.");
 			break;
-		*/
 		default:
 			timer = setInterval(doTheTime, 1000);
 			break;
@@ -130,8 +132,14 @@ function checkDay() {
 }
 
 // Check if it is a working friday
-function checkFriday() {
-	
+function checkFriday(aDay) {
+	// Get week number and see if its odd or even
+	var offFriday = (firstOffFridayStart.getWeek()) & 1;
+	var tWeek = !(aDay.getWeek() & 1);
+	console.log(offFriday + " and " + tWeek);
+	if(offFriday == tWeek) {
+		return true;
+	} else { return false;}
 }
 
 // Check if h:m is in the range of a:b-c:d
@@ -169,7 +177,6 @@ function doTheTime() {
 	var h;
 	var m;	
 	var today = new Date();
-	var tDay = today.getDay();
 	var tHours = today.getHours();
 	var tMinutes = today.getMinutes();
 	isTime = checkTime(tHours,tMinutes,startTime[0],startTime[1],endTime[0],endTime[1]);
@@ -223,16 +230,16 @@ function displayTime() {
 	for(var i=0;i<posts.length;i++) {
 		var p = posts[i].post;
 		if(p == undefined){
-			document.getElementById(p).innerHTML = "-- min";
+			document.getElementById(p).innerHTML = "--";
 		} else {
-			document.getElementById(p).innerHTML = msToTime(posts[i].countdown)+" min";
+			document.getElementById(p).innerHTML = msToTime(posts[i].countdown);
 		}
 	}	
 	// Display closest time in card body
 	if(closest == undefined){
-		ct.innerHTML = "-- min";
+		ct.innerHTML = "--";
 	} else {
-		ct.innerHTML = msToTime(posts[closest].countdown)+" min";
+		ct.innerHTML = msToTime(posts[closest].countdown);
 	}
 	
 	// If time is <3min display red background
@@ -250,10 +257,30 @@ function displayTime() {
 function clearDivs() {
 	for(var i=0;i<posts.length;i++) {
 		var p = posts[i].post;
-		document.getElementById(p).innerHTML = "-- min";
+		document.getElementById(p).innerHTML = "--";
 	}	
 	// Clear closest time in card body
-	ct.innerHTML = "-- min";
+	ct.innerHTML = "--";
+}
+
+// Returns the ISO week of the date.
+Date.prototype.getWeek = function () {
+	var date = new Date(this.getTime());
+	date.setHours(0, 0, 0, 0);
+	// Thursday in current week decides the year.
+	date.setDate(date.getDate() + 3 - (date.getDay() + 6) % 7);
+	// January 4 is always in week 1.
+	var week1 = new Date(date.getFullYear(), 0, 4);
+	// Adjust to Thursday in week 1 and count number of weeks from date to week1.
+	return 1 + Math.round(((date.getTime() - week1.getTime()) / 86400000
+		- 3 + (week1.getDay() + 6) % 7) / 7);
+}
+
+// Returns the four-digit year corresponding to the ISO week of the date.
+Date.prototype.getWeekYear = function () {
+	var date = new Date(this.getTime());
+	date.setDate(date.getDate() + 3 - (date.getDay() + 6) % 7);
+	return date.getFullYear();
 }
 
 // Check if weekend on body load
