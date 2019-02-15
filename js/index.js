@@ -4,15 +4,16 @@
 
 let debug = 0; // 1 or 0 to display debug info in html
 let counter = 0;
-let x = document.getElementById("closestLocation");
-let ct = document.getElementById("closestTime");
-let hT = document.getElementById("headerTime");
+let closestLocation = document.getElementById("closestLocation");
+let closestTime = document.getElementById("closestTime");
 let closest;
 let timer;
-// start and end times [Hour,Minute] format.
+// Start and end times [Hour,Minute] format.
 let startTime 	= [6,29];
 let endTime 	= [17,29];
 let endTimeFri 	= [13,29];
+// Shuttle running flag
+var flag = true;
 // First off friday of the year.
 let firstOffFridayStart = new Date("01/11/2019");
 
@@ -82,10 +83,10 @@ function processGeolocation(position) {
 	// Display geo debug info on web page
 	if(debug) {
 		let div = document.getElementById("debug");
-  	div.innerHTML = `<h5 class="uk-margin-remove-bottom">GPS Debug Info:</h5>` + "<br>Counter: " + counter++ +
+  	div.innerHTML = `<h5 class="uk-margin-remove-bottom">GPS Debug Info:</h5>` + "Counter: " + counter++ +
     "<br>Latitude: " + latitude +
     "<br>Longitude: " + longitude +
-    "<br>Accuracy: " + accuracy;
+    "<br>Accuracy: " + accuracy + "m";
 	} 
 	for (i = 0; i < posts.length; i++) { 
 		posts[i].delta = distance(latitude, longitude, posts[i].lat,posts[i].lon);
@@ -93,7 +94,7 @@ function processGeolocation(position) {
 	
 	// Find smallest delta value and write post name to div
 	closest = Object.keys(posts).reduce((a, b) => posts[a].delta < posts[b].delta ? a : b);
-	x.innerHTML = posts[closest].post;
+	closestLocation.innerHTML = posts[closest].post;
 }
 
 // Get the distance as the crow flies between long/lat coordinates, but also include the radius of the earth becuase that is just cool.
@@ -108,32 +109,30 @@ function distance(lat1, lon1, lat2, lon2) {
 
 /*****************TIMESTUFF*******************/
 
+function startInverval() {
+	timer = setInterval(checkDay, 1000);
+}
+
 // Check if shuttle runs on that day/time
 function checkDay() {
 	// If mon-th or on fri	
 	var today = new Date();
 	var tDay = today.getDay();
-	var tHours = today.getHours();
-	var tMinutes = today.getMinutes();
-	isTime = checkTime(tHours, tMinutes, startTime[0], startTime[1], endTime[0], endTime[1]);
-	isFriTime = checkTime(tHours, tMinutes, startTime[0], startTime[1], endTimeFri[0], endTimeFri[1]);
+	console.log(today);
 
 	switch(tDay) {
 		case 6:
 		case 0:
-			dayError("Shuttle is not currently running.");
+			flag = false;
 			break;
 		case 5:
-			if(checkFriday(today) && isFriTime){
-				timer = setInterval(doTheTime,1000);
+			if(checkFriday(today)){
+				doTheTime();
 			}
-			else dayError("Shuttle is not currently running.");
+			else flag = false;	
 			break;
 		default:
-			if(isTime) {
-				timer = setInterval(doTheTime, 1000);
-			}
-			else dayError("Shuttle is not currently running.");
+				doTheTime();
 			break;
 	}
 }
@@ -181,39 +180,45 @@ function getByValue(arr, value) {
 // Get next shuttle stop time and compare to current time to get countdown
 function doTheTime() {
 	var today = new Date();
+	var tDay = today.getDay();
 	var tHours = today.getHours();
 	var tMinutes = today.getMinutes();
-	isTime = checkTime(tHours, tMinutes, startTime[0], startTime[1], endTime[0], endTime[1]);
-	isFriTime = checkTime(tHours, tMinutes, startTime[0], startTime[1], endTimeFri[0], endTimeFri[1]);
+
+	switch (tDay) {
+		case 5:
+			isTime = checkTime(tHours, tMinutes, startTime[0], startTime[1], endTimeFri[0], endTimeFri[1]);
+			break;	
+		default:
+			isTime = checkTime(tHours, tMinutes, startTime[0], startTime[1], endTime[0], endTime[1]);
+			break;
+	}
+
 	if(isTime) {
+		flag = true;
 		for(var i=0; i < posts.length; i++) {
-			// Get first item in posts[i].events array that is > minute
+			var count, deltaTime;
 			var t = new Date();
-			var d = new Date();
-			var count;
-			var currentTime = d.getTime();
-			var found;
-			h = d.getHours();
-			m = d.getMinutes();
-			found = getByValue(posts[i].events, m);
-			
-			// Check if found getByValue returned anything in the array. If it didn't then the time is in the next hour
+			var currentTime = today.getTime();
+			var found = getByValue(posts[i].events, tMinutes);
+			// Check if found getByValue returned anything in the array. If it didn't than the time is in the next hour
 			if(found){
 				t.setMinutes(found, 0);
 			}else{
-				t.setHours(h+1, posts[i].events[0], 0);
+				t.setHours(tHours + 1, posts[i].events[0], 0);
 			}	
 			count = t.getTime();	
-			var deltaTime = Math.abs(count - currentTime);
+			deltaTime = Math.abs(count - currentTime);
 			posts[i].countdown = deltaTime;		
 		}
 		// Display in HTML
 		displayTime();
 	}
 	else{ 
-		dayError("Shuttel is not currenlty running.");
-		clearDivs();
-		clearInterval(timer);		
+		if(flag){
+			dayError("Shuttle is not currently running.");
+			clearDivs();
+		}
+		flag = false;
 	}
 }
 
@@ -233,18 +238,17 @@ function displayTime() {
 	for(var i=0;i<posts.length;i++) {
 		var p = posts[i].post;
 		if(p == undefined){
-			document.getElementById(p).innerHTML = "--";
+			document.getElementById(p).innerHTML = "----";
 		} else {
 			document.getElementById(p).innerHTML = msToTime(posts[i].countdown);
 		}
 	}	
 	// Display closest time in card body
 	if(closest == undefined){
-		ct.innerHTML = "--";
+		closestTime.innerHTML = "--";
 	} else {
-		ct.innerHTML = msToTime(posts[closest].countdown);
-	}
-	
+		closestTime.innerHTML = msToTime(posts[closest].countdown);
+	}	
 	// If time is <3min display red background
 	if(closest == undefined){
 		//
@@ -260,10 +264,10 @@ function displayTime() {
 function clearDivs() {
 	for(var i=0;i<posts.length;i++) {
 		var p = posts[i].post;
-		document.getElementById(p).innerHTML = "--";
+		document.getElementById(p).innerHTML = "----";
 	}	
 	// Clear closest time in card body
-	ct.innerHTML = "--";
+	closestTime.innerHTML = "----";
 }
 
 // Returns the ISO week of the date.
@@ -287,4 +291,4 @@ Date.prototype.getWeekYear = function () {
 }
 
 // Check if weekend on body load
-document.body.onload =  function() {checkDay()};
+document.body.onload =  function() {startInverval()};
