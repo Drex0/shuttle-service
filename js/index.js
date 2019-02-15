@@ -13,6 +13,7 @@ let timer;
 let startTime 	= [6,29];
 let endTime 	= [17,29];
 let endTimeFri 	= [13,29];
+let firstOffFridayStart = new Date("01/11/2019");
 
 // delta			= compare current position to post position
 // countdown		= the time until next shuttle arrives 15min or less
@@ -39,8 +40,6 @@ var holidays = [
 	"12/25/2019",
 	"12/26/2019"
 ];
-
-const firstOffFridayStart = new Date("01/11/2019");
 
 // Tracking users position
 let watchId = navigator.geolocation.watchPosition(
@@ -113,20 +112,28 @@ function checkDay() {
 	// If mon-th or on fri	
 	var aDay = new Date();
 	var tDay = aDay.getDay();
-	
+	var today = new Date();
+	var tHours = today.getHours();
+	var tMinutes = today.getMinutes();
+	isTime = checkTime(tHours, tMinutes, startTime[0], startTime[1], endTime[0], endTime[1]);
+	isFriTime = checkTime(tHours, tMinutes, startTime[0], startTime[1], endTimeFri[0], endTimeFri[1]);
+
 	switch(tDay) {
 		case 6:
 		case 0:
 			dayError("Shuttle is not currently running.");
 			break;
 		case 5:
-			if(checkFriday(aDay)){
-				setInterval(doTheTime,1000);
+			if(checkFriday(aDay) && isFriTime){
+				timer = setInterval(doTheTime,1000);
 			}
-			else dayError("Off Friday. Shuttle is not currently running.");
+			else dayError("Shuttle is not currently running.");
 			break;
 		default:
-			timer = setInterval(doTheTime, 1000);
+			if(isTime) {
+				timer = setInterval(doTheTime, 1000);
+			}
+			else dayError("Shuttle is not currently running.");
 			break;
 	}
 }
@@ -136,7 +143,6 @@ function checkFriday(aDay) {
 	// Get week number and see if its odd or even
 	var offFriday = (firstOffFridayStart.getWeek()) & 1;
 	var tWeek = !(aDay.getWeek() & 1);
-	console.log(offFriday + " and " + tWeek);
 	if(offFriday == tWeek) {
 		return true;
 	} else { return false;}
@@ -174,15 +180,12 @@ function getByValue(arr, value) {
 
 // Get next shuttle stop time and compare to current time to get countdown
 function doTheTime() {
-	var h;
-	var m;	
 	var today = new Date();
 	var tHours = today.getHours();
 	var tMinutes = today.getMinutes();
-	isTime = checkTime(tHours,tMinutes,startTime[0],startTime[1],endTime[0],endTime[1]);
-	isFriTime = checkTime(tHours,tMinutes,startTime[0],startTime[1],endTimeFri[0],endTimeFri[1]);
-
-	if(isTime){
+	isTime = checkTime(tHours, tMinutes, startTime[0], startTime[1], endTime[0], endTime[1]);
+	isFriTime = checkTime(tHours, tMinutes, startTime[0], startTime[1], endTimeFri[0], endTimeFri[1]);
+	if(isTime) {
 		for(var i=0; i < posts.length; i++) {
 			// Get first item in posts[i].events array that is > minute
 			var t = new Date();
@@ -207,11 +210,11 @@ function doTheTime() {
 		// Display in HTML
 		displayTime();
 	}
-	else {		
+	else{ 
+		dayError("Shuttel is not currenlty running.");
 		clearDivs();
-		dayError("Shuttle is not currenlty running.");
-		clearInterval(timer);
-	}	
+		clearInterval(timer);		
+	}
 }
 
 // Convert milliseconds to mm:ss

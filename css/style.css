@@ -3,10 +3,19 @@
 }
 li>p {
 	margin: 0;
+	display: inline-block;
 }
 .dangerbg {
 	background-color: #F0506E;
 }
 .construction {
 	color: white;
+}
+#card {
+	padding-bottom: 0;
+}
+li>p:nth-child(2){
+	float: right;
+	padding-right: 13%;
+	padding-left: 13%;
 }
