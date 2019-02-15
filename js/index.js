@@ -13,6 +13,7 @@ let timer;
 let startTime 	= [6,29];
 let endTime 	= [17,29];
 let endTimeFri 	= [13,29];
+// First off friday of the year.
 let firstOffFridayStart = new Date("01/11/2019");
 
 // delta			= compare current position to post position
@@ -59,7 +60,7 @@ function geolocationError(err){
     message: err.message,
     status: 'danger',
     pos: 'bottom-center',
-    timeout: 5000
+    timeout: 0
 	});
 };
 
@@ -110,9 +111,8 @@ function distance(lat1, lon1, lat2, lon2) {
 // Check if shuttle runs on that day/time
 function checkDay() {
 	// If mon-th or on fri	
-	var aDay = new Date();
-	var tDay = aDay.getDay();
 	var today = new Date();
+	var tDay = today.getDay();
 	var tHours = today.getHours();
 	var tMinutes = today.getMinutes();
 	isTime = checkTime(tHours, tMinutes, startTime[0], startTime[1], endTime[0], endTime[1]);
@@ -124,7 +124,7 @@ function checkDay() {
 			dayError("Shuttle is not currently running.");
 			break;
 		case 5:
-			if(checkFriday(aDay) && isFriTime){
+			if(checkFriday(today) && isFriTime){
 				timer = setInterval(doTheTime,1000);
 			}
 			else dayError("Shuttle is not currently running.");

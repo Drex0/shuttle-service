@@ -16,6 +16,4 @@ li>p {
 }
 li>p:nth-child(2){
 	float: right;
-	padding-right: 13%;
-	padding-left: 13%;
 }
