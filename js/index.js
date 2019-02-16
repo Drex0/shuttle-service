@@ -34,7 +34,6 @@ var posts = [
 // Short dates format "MM/DD/YYYY"
 //TODO: Check function to see if it's a holiday
 var holidays = [
-	"2/16/2019",
 	"5/27//2019",
 	"7/4/2019",
 	"9/2/2019",
