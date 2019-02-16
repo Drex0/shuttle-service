@@ -14,6 +14,7 @@ let endTime 	= [17,29];
 let endTimeFri 	= [13,29];
 // Shuttle running flag
 var flag = true;
+var hFlag = true;
 // First off friday of the year.
 let firstOffFridayStart = new Date("01/11/2019");
 
@@ -33,6 +34,7 @@ var posts = [
 // Short dates format "MM/DD/YYYY"
 //TODO: Check function to see if it's a holiday
 var holidays = [
+	"2/16/2019",
 	"5/27//2019",
 	"7/4/2019",
 	"9/2/2019",
@@ -116,24 +118,48 @@ function startInverval() {
 // Check if shuttle runs on that day/time
 function checkDay() {
 	// If mon-th or on fri	
+	var isHoliday = false;
 	var today = new Date();
-	var tDay = today.getDay();
 	console.log(today);
-
-	switch(tDay) {
-		case 6:
-		case 0:
-			flag = false;
-			break;
-		case 5:
-			if(checkFriday(today)){
+	console.log(hFlag);
+	var tDay = today.getDay();
+	var todayString = (today.getMonth()+1) + "/" + today.getDate() + "/" + today.getFullYear();
+	for(i=0;i < holidays.length; i++) {
+		if(todayString == holidays[i]){
+			isHoliday = true;
+		}
+	}
+	if(!isHoliday) {
+		hFlag = true;
+		switch (tDay) {
+			case 6:
+			case 0:
+				if(flag){
+					flag = false;
+					dayError("Shuttle doesn't run on the Weekends.")
+				}
+				break;
+			case 5:
+				if (checkFriday(today)) {
+					doTheTime();
+				}
+				else {
+					if(flag){					
+						flag = false;
+						dayError("Shuttle doesn't run on Off Fridays.")
+					}
+				}
+				break;
+			default:
 				doTheTime();
-			}
-			else flag = false;	
-			break;
-		default:
-				doTheTime();
-			break;
+				break;
+		}
+	}
+	else {
+		if(hFlag){
+			dayError("Shuttel doesn't run on Holidays.");
+			hFlag = false;
+		}
 	}
 }
 
@@ -217,8 +243,8 @@ function doTheTime() {
 		if(flag){
 			dayError("Shuttle is not currently running.");
 			clearDivs();
+			flag = false;
 		}
-		flag = false;
 	}
 }
 
