@@ -19,7 +19,7 @@ var hFlag = true;
 let firstOffFridayStart = new Date("01/11/2019");
 
 // delta			= compare current position to post position
-// countdown		= the time until next shuttle arrives 15min or less
+// countdown	= the time until next shuttle arrives 15min or less
 // events			= represent the minutes every hour that the shuttle stops at that post
 var posts = [
 	{ post:'A - West', lat:40.790127, lon:-111.952834, delta:0, countdown:0, events:[11,26,41,56]},
@@ -32,7 +32,6 @@ var posts = [
 ];
 
 // Short dates format "MM/DD/YYYY"
-//TODO: Check function to see if it's a holiday
 var holidays = [
 	"5/27//2019",
 	"7/4/2019",
@@ -44,6 +43,31 @@ var holidays = [
 	"12/26/2019"
 ];
 
+/*****************MESSAGESTUFF*******************/
+
+// If there is an error getting geo location alert user
+function geolocationError(err) {
+	//alert(err.message)
+	UIkit.notification({
+		message: err.message,
+		status: 'danger',
+		pos: 'bottom-center',
+		timeout: 0
+	});
+};
+
+// Nights and weekends error / no shuttle runs
+function dayError(mess) {
+	UIkit.notification({
+		message: mess,
+		status: 'danger',
+		pos: 'bottom-center',
+		timeout: 0
+	});
+}
+
+/*****************GEOSTUFF*******************/
+
 // Tracking users position
 let watchId = navigator.geolocation.watchPosition(
   processGeolocation,
@@ -54,27 +78,6 @@ let watchId = navigator.geolocation.watchPosition(
     maximumAge: 0
   }
 );
-
-// If there is an error getting geo location alert user
-function geolocationError(err){
-  //alert(err.message)
-	UIkit.notification({
-    message: err.message,
-    status: 'danger',
-    pos: 'bottom-center',
-    timeout: 0
-	});
-};
-
-// Nights and weekends error / no shuttle runs
-function dayError(mess){
-	UIkit.notification({
-		message: mess,
-		status: 'danger',
-		pos: 'bottom-center',
-		timeout: 0
-	});
-}
 
 function processGeolocation(position) {
   var latitude = position.coords.latitude;
