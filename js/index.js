@@ -25,11 +25,11 @@ var posts = [
 	{ post:'F - East', lat:40.782786, lon:-111.951483, delta:0, countdown:0, events:[0,15,30,45]},
 	{ post:'X - West', lat:40.780959, lon:-111.951195, delta:0, countdown:0, events:[1,16,31,46]},
 	{ post:'Post 4', 	 lat:40.779283, lon:-111.951340, delta:0, countdown:0, events:[2,17,32,47]},
-	{ post:'D - West', lat: 40.7760803, lon: -111.9519, delta:0, countdown:0, events:[4,19,34,49]},
+	{ post:'D - West', lat:40.776080, lon:-111.951900, delta:0, countdown:0, events:[4,19,34,49]},
 	{ post:'C - West', lat:40.778516, lon:-111.953135, delta:0, countdown:0, events:[6,21,36,51]},
 	{ post:'F - West', lat:40.783623, lon:-111.953091, delta:0, countdown:0, events:[8,23,38,53]}
 ];
- 
+
 // Short dates format "MM/DD/YYYY"
 var holidays = [
 	"5/27//2019",
