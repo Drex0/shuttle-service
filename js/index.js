@@ -98,6 +98,32 @@ function processGeolocation(position) {
 	// Find smallest delta value and write post name to div
 	closest = Object.keys(posts).reduce((a, b) => posts[a].delta < posts[b].delta ? a : b);
 	closestLocation.innerHTML = posts[closest].post;
+
+	map = new google.maps.Map(document.getElementById('map'), {
+		center: { lat: latitude, lng: longitude },
+		zoom: 15
+	});
+
+	// Add Post markers to map
+	var infowindow = new google.maps.InfoWindow();
+	var marker, l;
+
+	for (l = 0; l < posts.length; l++) {
+		marker = new google.maps.Marker({
+			position: new google.maps.LatLng(posts[l].lat, posts[l].lon),
+			map: map
+		});
+
+		google.maps.event.addListener(marker, 'click', (function (marker, l) {
+			return function () {
+				infowindow.setContent(posts[l].post);
+				infowindow.open(map, marker);
+			}
+		})(marker, l));
+	}
+}
+
+function showPosition(position) {
 }
 
 // Get the distance as the crow flies between long/lat coordinates, but also include the radius of the earth becuase that is just cool.
