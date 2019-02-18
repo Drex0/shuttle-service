@@ -52,7 +52,7 @@ function geolocationError(err) {
 		message: err.message,
 		status: 'danger',
 		pos: 'bottom-center',
-		timeout: 0
+		timeout: 5000
 	});
 };
 
@@ -62,7 +62,7 @@ function dayError(mess) {
 		message: mess,
 		status: 'danger',
 		pos: 'bottom-center',
-		timeout: 0
+		timeout: 10000
 	});
 }
 
@@ -75,7 +75,7 @@ let watchId = navigator.geolocation.watchPosition(
   geolocationError, {
     timeout: 60000,
     enableHighAccuracy: true,
-    maximumAge: 0
+    maximumAge: 5000
   }
 );
 
@@ -122,8 +122,6 @@ function checkDay() {
 	// If mon-th or on fri	
 	var isHoliday = false;
 	var today = new Date();
-	console.log(today);
-	console.log(hFlag);
 	var tDay = today.getDay();
 	var todayString = (today.getMonth()+1) + "/" + today.getDate() + "/" + today.getFullYear();
 	for(i=0;i < holidays.length; i++) {
@@ -279,7 +277,7 @@ function displayTime() {
 	}	
 	// If time is <3min display red background
 	if(closest == undefined){
-		//
+		console.log("Warning ----> Closest was Undefined.")
 	}
 	else if(posts[closest].countdown<180000){
 		document.getElementById("card").className = "uk-card-body dangerbg";
