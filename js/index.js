@@ -20,6 +20,7 @@ let firstOffFridayStart = new Date("01/11/2019");
 // delta			= compare current position to post position
 // countdown	= the time until next shuttle arrives 15min or less
 // events			= represent the minutes every hour that the shuttle stops at that post
+var shuttle;
 var posts = [
 	{ post:'A - West', lat:40.790127, lon:-111.952834, delta:0, countdown:0, events:[11,26,41,56]},
 	{ post:'F - East', lat:40.782786, lon:-111.951483, delta:0, countdown:0, events:[0,15,30,45]},
@@ -35,12 +36,13 @@ var holidays = [
 	"5/27//2019",
 	"7/4/2019",
 	"9/2/2019",
-	"11/28/2109",	
+	"11/28/2109",	 
 	"12/23/2019",
 	"12/24/2019",
 	"12/25/2019",
 	"12/26/2019"
 ];
+
 
 /*****************MESSAGESTUFF*******************/
 
@@ -98,7 +100,7 @@ let watchId = navigator.geolocation.watchPosition(
   geolocationError, {
     timeout: 60000,
     enableHighAccuracy: true,
-    maximumAge: 5000
+    maximumAge: 0
   }
 );
 
@@ -265,6 +267,23 @@ function msToTime(duration) {
   return minutes + ":" + seconds;
 }
 
+/*****************DISPLAY STUFF*******************/
+
+// Parse json file of posts
+var xmlhttp = new XMLHttpRequest();
+var list = "";
+xmlhttp.onreadystatechange = function () {
+	if (this.readyState == 4 && this.status == 200) {
+		shuttle = JSON.parse(this.responseText);
+		list += "<ul class='uk-list uk-list-divider'>"
+		for (var i = 0; i < shuttle.posts.length; i++) {
+			list += "<li><p class='uk-text-bold'>" + shuttle.posts[i].name + "</p><p id=" + shuttle.posts[i].name + ">----</p></li>";
+		}
+		list += "</ul>"
+		document.getElementById("posts").innerHTML = list;
+	}
+};
+
 function displayTime() {
 	// Display all times relative to their array position
 	// TODO: This needs an update to set the name of the stop from the object as well as the time instead of fixed array position.
@@ -325,6 +344,8 @@ Date.prototype.getWeekYear = function () {
 
 // Check if weekend on body load
 document.body.onload =  function() {
+	//xmlhttp.open("GET", "https://api.myjson.com/bins/et50y", true);
+	//xmlhttp.send();
 	startInverval();
 	mapSetup();
 };

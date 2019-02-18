@@ -1,0 +1,95 @@
+{
+    "posts": [
+        {
+            "name": "A - West",
+            "latitude": 40.790127,
+            "longitude": -111.952834,
+            "delta": 0,
+            "countdown": 0,
+            "events": [
+                11,
+                26,
+                41,
+                56
+            ]
+        },
+        {
+            "name": "F - East",
+            "latitude": 40.782786,
+            "longitude": -111.951483,
+            "delta": 0,
+            "countdown": 0,
+            "events": [
+                0,
+                15,
+                30,
+                45
+            ]
+        },
+        {
+            "name": "X - West",
+            "latitude": 40.780959,
+            "longitude": -111.951195,
+            "delta": 0,
+            "countdown": 0,
+            "events": [
+                1,
+                16,
+                31,
+                46
+            ]
+        },
+        {
+            "name": "Post 4",
+            "latitude": 40.779283,
+            "longitude": -111.95134,
+            "delta": 0,
+            "countdown": 0,
+            "events": [
+                2,
+                17,
+                32,
+                47
+            ]
+        },
+        {
+            "name": "D - West",
+            "latitude": 40.776629,
+            "longitude": -111.9528,
+            "delta": 0,
+            "countdown": 0,
+            "events": [
+                4,
+                19,
+                34,
+                49
+            ]
+        },
+        {
+            "name": "C - West",
+            "latitude": 40.778516,
+            "longitude": -111.953135,
+            "delta": 0,
+            "countdown": 0,
+            "events": [
+                6,
+                21,
+                36,
+                51
+            ]
+        },
+        {
+            "name": "F - West",
+            "latitude": 40.783623,
+            "longitude": -111.953091,
+            "delta": 0,
+            "countdown": 0,
+            "events": [
+                8,
+                23,
+                38,
+                53
+            ]
+        }
+    ],
+}
