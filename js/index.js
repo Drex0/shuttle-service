@@ -255,13 +255,13 @@ function displayTime() {
 	}	
 	// Display closest time in card body
 	if(closest == undefined){
-		closestTime.innerHTML = "--";
+		closestTime.innerHTML = "----";
 	} else {
 		closestTime.innerHTML = msToTime(posts[closest].countdown);
 	}	
 	// If time is <3min display red background
 	if(closest == undefined){
-		console.log("Warning ----> Closest was Undefined.")
+		//console.log("Info ----> Closest was Undefined.")
 	}
 	else if(posts[closest].countdown<180000){
 		document.getElementById("card").className = "uk-card-body dangerbg";
