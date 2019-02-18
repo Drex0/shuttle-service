@@ -67,6 +67,30 @@ function dayError(mess) {
 
 /*****************GEOSTUFF*******************/
 
+function mapSetup() {
+	// Add Post markers to map
+	var infowindow = new google.maps.InfoWindow();
+	var marker, l;
+
+	map = new google.maps.Map(document.getElementById('map'), {
+		center: { lat: 40.782547, lng: -111.9531173 },
+		zoom: 15
+	});
+	for (l = 0; l < posts.length; l++) {
+		marker = new google.maps.Marker({
+			position: new google.maps.LatLng(posts[l].lat, posts[l].lon),
+			map: map
+		});
+
+		google.maps.event.addListener(marker, 'click', (function (marker, l) {
+			return function () {
+				infowindow.setContent(posts[l].post);
+				infowindow.open(map, marker);
+			}
+		})(marker, l));
+	}
+}
+
 // Tracking users position
 let watchId = navigator.geolocation.watchPosition(
   processGeolocation,
@@ -98,34 +122,7 @@ function processGeolocation(position) {
 	// Find smallest delta value and write post name to div
 	closest = Object.keys(posts).reduce((a, b) => posts[a].delta < posts[b].delta ? a : b);
 	closestLocation.innerHTML = posts[closest].post;
-
-	map = new google.maps.Map(document.getElementById('map'), {
-		center: { lat: latitude, lng: longitude },
-		zoom: 15
-	});
-
-	// Add Post markers to map
-	var infowindow = new google.maps.InfoWindow();
-	var marker, l;
-
-	for (l = 0; l < posts.length; l++) {
-		marker = new google.maps.Marker({
-			position: new google.maps.LatLng(posts[l].lat, posts[l].lon),
-			map: map
-		});
-
-		google.maps.event.addListener(marker, 'click', (function (marker, l) {
-			return function () {
-				infowindow.setContent(posts[l].post);
-				infowindow.open(map, marker);
-			}
-		})(marker, l));
-	}
 }
-
-function showPosition(position) {
-}
-
 // Get the distance as the crow flies between long/lat coordinates, but also include the radius of the earth becuase that is just cool.
 function distance(lat1, lon1, lat2, lon2) {
   var p = 0.017453292519943295;    // Math.PI / 180
@@ -327,4 +324,7 @@ Date.prototype.getWeekYear = function () {
 }
 
 // Check if weekend on body load
-document.body.onload =  function() {startInverval()};
+document.body.onload =  function() {
+	startInverval();
+	mapSetup();
+};
