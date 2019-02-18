@@ -14,7 +14,6 @@ let endTime 	= [17,29];
 let endTimeFri 	= [13,29];
 // Shuttle running flag
 var flag = true;
-var hFlag = true;
 // First off friday of the year.
 let firstOffFridayStart = new Date("01/11/2019");
 
@@ -117,48 +116,52 @@ function startInverval() {
 	timer = setInterval(checkDay, 1000);
 }
 
-// Check if shuttle runs on that day/time
+// Check if shuttle runs on that day/time/not a holiday
 function checkDay() {
 	// If mon-th or on fri	
-	var isHoliday = false;
+	var isNotHoliday = true;
+	var isDay = false;
+	var isTime = false;
 	var today = new Date();
 	var tDay = today.getDay();
+	var tHours = today.getHours();
+	var tMinutes = today.getMinutes();
 	var todayString = (today.getMonth()+1) + "/" + today.getDate() + "/" + today.getFullYear();
+
 	for(i=0;i < holidays.length; i++) {
 		if(todayString == holidays[i]){
-			isHoliday = true;
+			isNotHoliday = false;
 		}
 	}
-	if(!isHoliday) {
-		hFlag = true;
-		switch (tDay) {
-			case 6:
-			case 0:
-				if(flag){
-					flag = false;
-					dayError("Shuttle doesn't run on the Weekends.")
-				}
-				break;
-			case 5:
-				if (checkFriday(today)) {
-					doTheTime();
-				}
-				else {
-					if(flag){					
-						flag = false;
-						dayError("Shuttle doesn't run on Off Fridays.")
-					}
-				}
-				break;
-			default:
-				doTheTime();
-				break;
-		}
+	switch (tDay) {
+		// Mon-Thur
+		case 1:
+		case 2:
+		case 3:
+		case 4:
+			isDay = true;
+			isTime = checkTime(tHours, tMinutes, startTime[0], startTime[1], endTime[0], endTime[1]);
+			break;
+			// Fri
+		case 5:
+			if (checkFriday(today)) {
+				isDay = true;
+			}			
+			isTime = checkTime(tHours, tMinutes, startTime[0], startTime[1], endTimeFri[0], endTimeFri[1]);
+			break;	
+		default:
+			// Weekend so we don't care
+			break;
+	}
+
+	if(isTime && isDay && isNotHoliday) {
+		doTheTime();
 	}
 	else {
-		if(hFlag){
-			dayError("Shuttel doesn't run on Holidays.");
-			hFlag = false;
+		if (flag) {
+			dayError("Shuttle is not currently running.");
+			clearDivs();
+			flag = false;
 		}
 	}
 }
@@ -206,46 +209,27 @@ function getByValue(arr, value) {
 // Get next shuttle stop time and compare to current time to get countdown
 function doTheTime() {
 	var today = new Date();
-	var tDay = today.getDay();
 	var tHours = today.getHours();
 	var tMinutes = today.getMinutes();
 
-	switch (tDay) {
-		case 5:
-			isTime = checkTime(tHours, tMinutes, startTime[0], startTime[1], endTimeFri[0], endTimeFri[1]);
-			break;	
-		default:
-			isTime = checkTime(tHours, tMinutes, startTime[0], startTime[1], endTime[0], endTime[1]);
-			break;
+	flag = true;
+	for(var i=0; i < posts.length; i++) {
+		var count, deltaTime;
+		var t = new Date();
+		var currentTime = today.getTime();
+		var found = getByValue(posts[i].events, tMinutes);
+		// Check if found getByValue returned anything in the array. If it didn't than the time is in the next hour
+		if(found){
+			t.setMinutes(found, 0);
+		}else{
+			t.setHours(tHours + 1, posts[i].events[0], 0);
+		}	
+		count = t.getTime();	
+		deltaTime = Math.abs(count - currentTime);
+		posts[i].countdown = deltaTime;		
 	}
-
-	if(isTime) {
-		flag = true;
-		for(var i=0; i < posts.length; i++) {
-			var count, deltaTime;
-			var t = new Date();
-			var currentTime = today.getTime();
-			var found = getByValue(posts[i].events, tMinutes);
-			// Check if found getByValue returned anything in the array. If it didn't than the time is in the next hour
-			if(found){
-				t.setMinutes(found, 0);
-			}else{
-				t.setHours(tHours + 1, posts[i].events[0], 0);
-			}	
-			count = t.getTime();	
-			deltaTime = Math.abs(count - currentTime);
-			posts[i].countdown = deltaTime;		
-		}
-		// Display in HTML
-		displayTime();
-	}
-	else{ 
-		if(flag){
-			dayError("Shuttle is not currently running.");
-			clearDivs();
-			flag = false;
-		}
-	}
+	// Display in HTML
+	displayTime();
 }
 
 // Convert milliseconds to mm:ss
