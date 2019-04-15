@@ -43,7 +43,6 @@ var holidays = [
 	"12/26/2019"
 ];
 
-
 /*****************MESSAGESTUFF*******************/
 
 // If there is an error getting geo location alert user
