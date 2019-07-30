@@ -22,13 +22,13 @@ let firstOffFridayStart = new Date("01/11/2019");
 // events			= represent the minutes every hour that the shuttle stops at that post
 var shuttle;
 var posts = [
-	{ post:'Command', lat:40.782786, lon:-111.951483, delta:0, countdown:0, events:[10,30,50]},
-	{ post:'X - West', lat:40.780959, lon:-111.951195, delta:0, countdown:0, events:[12,32,52]},
-	{ post:'Post 4', lat: 40.779283, lon: -111.951340, delta: 0, countdown: 0, events: [14,34,54]},
-	{ post:'Overflow', lat: 40.777441, lon: -111.951261, delta: 0, countdown: 0, events: [16,36,56]},	
-	{ post:'D - West', lat:40.776629, lon:-111.952800, delta:0, countdown:0, events:[18,38,58]},
-	{ post:'C - West', lat:40.778516, lon:-111.953135, delta:0, countdown:0, events:[0,20,40]},
-	{ post:'E - North', lat:40.784427, lon:-111.952199, delta:0, countdown:0, events:[3,23,43]},
+	{ post:'Command', lat:40.782673, lon:-111.951536, delta:0, countdown:0, events:[10,30,50]},
+	{ post:'X - West', lat:40.780985, lon:-111.951194, delta:0, countdown:0, events:[12,32,52]},
+	{ post:'Post 4', lat: 40.779283, lon: -111.951325, delta: 0, countdown: 0, events: [14,34,54]},
+	{ post:'Overflow', lat: 40.777068, lon: -111.950962, delta: 0, countdown: 0, events: [16,36,56]},	
+	{ post:'D - West', lat:40.776568, lon:-111.952789, delta:0, countdown:0, events:[18,38,58]},
+	{ post:'C - West', lat:40.778514, lon:-111.953121, delta:0, countdown:0, events:[0,20,40]},
+	{ post:'E - North', lat:40.784398, lon:-111.952249, delta:0, countdown:0, events:[3,23,43]},
 	{ post: 'A - West', lat: 40.790127, lon: -111.952834, delta: 0, countdown: 0, events: [7, 27, 47] }
 ];
 
