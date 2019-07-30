@@ -77,7 +77,7 @@ function dayError(mess) {
 		pos: 'bottom-center',
 		timeout: 10000
 	});
-}
+};
 
 /*****************GEOSTUFF*******************/
 
@@ -387,7 +387,7 @@ document.body.onload =  function() {
 	buildPostList();
 
 	// Second shuttle starts running at 8AM
-	if (tHours >= 7) {
+	if (tHours > 7) {
 		posts.forEach(element => {
 			extraTimes.forEach(element2 => {
 				if (element.post === element2.post) {
