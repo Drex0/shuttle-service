@@ -22,13 +22,26 @@ let firstOffFridayStart = new Date("01/11/2019");
 // events			= represent the minutes every hour that the shuttle stops at that post
 var shuttle;
 var posts = [
-	{ post:'A - West', lat:40.790127, lon:-111.952834, delta:0, countdown:0, events:[11,26,41,56]},
-	{ post:'F - East', lat:40.782786, lon:-111.951483, delta:0, countdown:0, events:[0,15,30,45]},
-	{ post:'X - West', lat:40.780959, lon:-111.951195, delta:0, countdown:0, events:[1,16,31,46]},
-	{ post:'Post 4', 	 lat:40.779283, lon:-111.951340, delta:0, countdown:0, events:[2,17,32,47]},
-	{ post:'D - West', lat:40.776629, lon:-111.952800, delta:0, countdown:0, events:[4,19,34,49]},
-	{ post:'C - West', lat:40.778516, lon:-111.953135, delta:0, countdown:0, events:[6,21,36,51]},
-	{ post:'F - West', lat:40.783623, lon:-111.953091, delta:0, countdown:0, events:[8,23,38,53]}
+	{ post:'Command', lat:40.782786, lon:-111.951483, delta:0, countdown:0, events:[10,30,50]},
+	{ post:'X - West', lat:40.780959, lon:-111.951195, delta:0, countdown:0, events:[12,32,52]},
+	{ post:'Post 4', lat: 40.779283, lon: -111.951340, delta: 0, countdown: 0, events: [14,34,54]},
+	{ post:'Overflow', lat: 40.777441, lon: -111.951261, delta: 0, countdown: 0, events: [16,36,56]},	
+	{ post:'D - West', lat:40.776629, lon:-111.952800, delta:0, countdown:0, events:[18,38,58]},
+	{ post:'C - West', lat:40.778516, lon:-111.953135, delta:0, countdown:0, events:[0,20,40]},
+	{ post:'E - North', lat:40.784427, lon:-111.952199, delta:0, countdown:0, events:[3,23,43]},
+	{ post: 'A - West', lat: 40.790127, lon: -111.952834, delta: 0, countdown: 0, events: [7, 27, 47] }
+];
+
+// second shuttle starts running at 8AM
+var extraTimes = [
+	{ post: 'Command', events: [0, 20, 40] },
+	{ post: 'X - West', events: [2, 22, 42] },
+	{ post: 'Post 4', events: [4, 24, 44] },
+	{ post: 'Overflow', events: [6, 26, 46] },
+	{ post: 'D - West', events: [8, 28, 48] },
+	{ post: 'C - West', events: [10, 30, 50] },
+	{ post: 'E - North', events: [13, 33, 53] },
+	{ post: 'A - West', events: [17, 37, 57] }
 ];
 
 // Short dates format "MM/DD/YYYY"
@@ -138,6 +151,9 @@ function distance(lat1, lon1, lat2, lon2) {
 
 function startInverval() {
 	timer = setInterval(checkDay, 1000);
+
+	//For testing you can run timer without checking day, time, holiday, etc.
+	//timer = setInterval(doTheTime, 1000);
 }
 
 // Check if shuttle runs on that day/time/not a holiday
@@ -341,10 +357,48 @@ Date.prototype.getWeekYear = function () {
 	return date.getFullYear();
 }
 
+// Build HTML Post List
+function buildPostList() {
+	posts.forEach(element => {
+		var li = document.createElement('li');
+		var p1 = document.createElement('p');
+		var p2 = document.createElement('p');
+
+		p1.classList.add("uk-text-bold");
+		p1.textContent = element.post;
+
+		p2.id = element.post;
+		p2.textContent = "----";
+
+		li.appendChild(p1);
+		li.appendChild(p2);
+		document.getElementById("PostList").appendChild(li);
+	});
+}
+
 // Check if weekend on body load
 document.body.onload =  function() {
 	//xmlhttp.open("GET", "https://api.myjson.com/bins/et50y", true);
 	//xmlhttp.send();
+
+	var today = new Date();
+	var tHours = today.getHours();
+
+	buildPostList();
+
+	// Second shuttle starts running at 8AM
+	if (tHours >= 7) {
+		posts.forEach(element => {
+			extraTimes.forEach(element2 => {
+				if (element.post === element2.post) {
+					element.events = element.events.concat(element2.events);
+				}
+			});
+			element.events.sort(function(a,b){return a-b});
+			console.log(element.events);
+		});
+	}
+
 	startInverval();
-	mapSetup();
+	//mapSetup();
 };
