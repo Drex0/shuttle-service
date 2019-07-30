@@ -395,7 +395,7 @@ document.body.onload =  function() {
 				}
 			});
 			element.events.sort(function(a,b){return a-b});
-			console.log(element.events);
+			//console.log(element.events);
 		});
 	}
 
